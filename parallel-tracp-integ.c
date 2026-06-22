@@ -17,25 +17,43 @@ that is,
 gcc -fopenmp parallel-tracp-integ.c -o parallel-tracp-integ -lm
 */
    
+void save_results(
+    int thead_count,
+    int slices,
+    double total_area
+) {
+    FILE *fp = fopen("race-condition_existence.csv", "a");
+
+    if (fp == NULL) {
+        perror("Error opening file");
+        return;
+    }
+
+    fprintf(fp,
+            "%d,%d%.6f\n",
+            thead_count,
+            slices,
+            total_area);
+
+    fclose(fp);
+}
+
 
 void Trap(int n , double* global_result, int thead_count){
     double h, x, my_result, temp_global_result;
     int i;
-
-    // int my_rank = omp_get_thread_num();
-    // int thead_count = omp_get_num_threads();
     
     h = (b - a) / n;
     temp_global_result = *global_result;
 
-    // #pragma omp parallel for num_threads(thead_count) default(none) reduction(+: temp_global_result) private(i) shared(n, h)
+    #pragma omp parallel for num_threads(thead_count) default(none) private(i) shared(n, h, temp_global_result)
 
-    // for (i = 0; i < n; i++) {
-    //     temp_global_result += U(a + i*h);
-    // }
+    for (i = 0; i < n; i++) {
+        temp_global_result += U(a + i*h);
+    }
 
-    // *global_result = temp_global_result;
-    // *global_result *= h;
+    *global_result = temp_global_result;
+    *global_result *= h;
 
 }
 
@@ -48,4 +66,7 @@ int main(int argc, char* argv[]) {
     Trap(n, &global_result, thead_count);
 
     printf("area is: %lf\n", global_result);
+
+    save_results(thead_count, n, global_result);
+
 }
