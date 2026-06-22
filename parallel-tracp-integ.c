@@ -22,7 +22,7 @@ void save_results(
     int slices,
     double total_area
 ) {
-    FILE *fp = fopen("race-condition_fixed.csv", "a");
+    FILE *fp = fopen("race_condition_fixed.csv", "a");
 
     if (fp == NULL) {
         perror("Error opening file");
