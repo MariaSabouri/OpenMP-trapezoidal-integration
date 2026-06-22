@@ -30,7 +30,7 @@ void save_results(
     }
 
     fprintf(fp,
-            "%d,%d%.6f\n",
+            "%d,%d,%.6f\n",
             thead_count,
             slices,
             total_area);
