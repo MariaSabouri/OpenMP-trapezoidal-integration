@@ -18,6 +18,28 @@ gcc -fopenmp parallel-tracp-integ.c -o parallel-tracp-integ -lm
 */
    
 
+void save_results(
+    int thead_count,
+    int slices,
+    double total_area
+) {
+    FILE *fp = fopen("result.csv", "a");
+
+    if (fp == NULL) {
+        perror("Error opening file");
+        return;
+    }
+
+    fprintf(fp,
+            "%d,%d%.6f\n",
+            thead_count,
+            slices,
+            total_area);
+
+    fclose(fp);
+}
+
+
 void Trap(int n , double* global_result, int thead_count){
     double h, x, my_result, temp_global_result;
     int i;
@@ -49,4 +71,6 @@ int main(int argc, char* argv[]) {
     Trap(n, &global_result, thead_count);
 
     printf("area is: %lf\n", global_result);
+
+    save_results(thead_count, n, global_result);
 }
