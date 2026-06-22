@@ -2,12 +2,13 @@
 #include <omp.h>
 #include <stdlib.h>
 #include "math.h"
-
+#include <time.h>
 
 
 #define U(x) sin(x)
 #define a 0
 #define b acos(-1.0)
+#define EXACT_VALUE 2
 
 /*
 If your code includes mathematical functions (like exp, cos, etc.), you need to link to the mathematics 
@@ -21,7 +22,9 @@ gcc -fopenmp parallel-tracp-integ.c -o parallel-tracp-integ -lm
 void save_results(
     int thead_count,
     int slices,
-    double total_area
+    double total_area,
+    double elapsed,
+    double exact_value
 ) {
     FILE *fp = fopen("result.csv", "a");
 
@@ -31,10 +34,12 @@ void save_results(
     }
 
     fprintf(fp,
-            "%d,%d%.6f\n",
+            "%d,%d,%.6f,%.6f,%.6f\n",
             thead_count,
             slices,
-            total_area);
+            total_area,
+            elapsed,
+            exact_value);
 
     fclose(fp);
 }
@@ -67,10 +72,15 @@ int main(int argc, char* argv[]) {
     int thead_count = strtol(argv[1], NULL, 10);
     int n = strtol(argv[2], NULL, 10);
     double global_result = (U(a) + U(b)) / 2;
+    time_t start_time, end_time;
 
+    time(&start_time);
     Trap(n, &global_result, thead_count);
+    time(&end_time);
+
+    double elapsed = difftime(end_time, start_time) * 1000000;
 
     printf("area is: %lf\n", global_result);
 
-    save_results(thead_count, n, global_result);
+    save_results(thead_count, n, global_result, elapsed, EXACT_VALUE);
 }
