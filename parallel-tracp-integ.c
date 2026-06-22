@@ -62,7 +62,7 @@ void Trap(int n ,
     h = (b - a) / n;
     temp_global_result = *global_result;
     
-    if (schedule == STATIC) {
+    if (schedule == STATIC && chunk_size > 0) {
             #pragma omp parallel for num_threads(thead_count) default(none) \
             reduction(+: temp_global_result) private(i) shared(n, h, chunk_size) schedule(static,chunk_size)
             for (i = 0; i < n; i++) {
@@ -70,6 +70,14 @@ void Trap(int n ,
                 temp_global_result += U(a + i*h);
             }
     }
+    else if (schedule == STATIC && chunk_size == 0) {
+            #pragma omp parallel for num_threads(thead_count) default(none) \
+            reduction(+: temp_global_result) private(i) shared(n, h) schedule(static)
+            for (i = 0; i < n; i++) {
+                if (i == 0) printf("number of thead(s) is(are): %d\n", omp_get_num_threads());
+                temp_global_result += U(a + i*h);
+            }
+    }    
     else if (schedule == DYNAMIC){
             #pragma omp parallel for num_threads(thead_count) default(none) \
             reduction(+: temp_global_result) private(i) shared(n, h) schedule(dynamic)
@@ -94,10 +102,10 @@ void Trap(int n ,
 
 int main(int argc, char* argv[]) {
     int thead_count = strtol(argv[1], NULL, 10);
-    int n = strtol(argv[4], NULL, 10);
     char* schedule_str = argv[2];
     int schedule = strtol(argv[2], NULL, 10);
     int chunk_size = strtol(argv[3], NULL, 10);
+    int n = strtol(argv[4], NULL, 10);
 
     double global_result = (U(a) + U(b)) / 2;
     time_t start_time, end_time;
