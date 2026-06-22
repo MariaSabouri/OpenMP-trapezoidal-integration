@@ -28,14 +28,14 @@ void Trap(int n , double* global_result, int thead_count){
     h = (b - a) / n;
     temp_global_result = *global_result;
 
-    #pragma omp parallel for num_threads(thead_count) default(none) reduction(+: temp_global_result) private(i) shared(n, h)
+    // #pragma omp parallel for num_threads(thead_count) default(none) reduction(+: temp_global_result) private(i) shared(n, h)
 
-    for (i = 0; i < n; i++) {
-        temp_global_result += U(a + i*h);
-    }
+    // for (i = 0; i < n; i++) {
+    //     temp_global_result += U(a + i*h);
+    // }
 
-    *global_result = temp_global_result;
-    *global_result *= h;
+    // *global_result = temp_global_result;
+    // *global_result *= h;
 
 }
 
