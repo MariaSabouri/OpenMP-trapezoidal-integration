@@ -1,0 +1,17 @@
+# Executables
+*.out
+*.exe
+*.o
+
+# Build directories
+build/
+bin/
+
+# VS Code
+.vscode/
+
+# Temporary files
+*.tmp
+
+#compiled file
+parallel-tracp-integ
